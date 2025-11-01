@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+spring:
+  neo4j:
+    uri: "neo4j+s://ebba7210.databases.neo4j.io"
+    authentication:
+      username: "neo4j"
+      password: "HKi1lY2Jb6kKiyVxiE7oJUhy-kCAY9BU8uMH8VhUhNY"
+  data:
+    neo4j:
+      database: neo4j

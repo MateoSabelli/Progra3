@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestor Logístico - Algoritmos</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #4caf50;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #555;
+        margin: 20px 0 10px;
+        font-size: 1.3em;
+        background: #f9f9f9;
+        padding: 8px 12px;
+        border-left: 4px solid #2196f3;
+      }
+      .section {
+        margin-bottom: 30px;
+        padding: 15px;
+        background: #fafafa;
+        border-radius: 6px;
+      }
+      .button-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s;
+        background: #2196f3;
+        color: white;
+      }
+      button:hover {
+        background: #1976d2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      button:active {
+        transform: translateY(0);
+      }
+      button.primary {
+        background: #4caf50;
+      }
+      button.primary:hover {
+        background: #45a049;
+      }
+      button.secondary {
+        background: #ff9800;
+      }
+      button.secondary:hover {
+        background: #e68900;
+      }
+      button.danger {
+        background: #f44336;
+      }
+      button.danger:hover {
+        background: #da190b;
+      }
+      .input-group {
+        margin: 10px 0;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      input,
+      select,
+      textarea {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #2196f3;
+        box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+      }
+      label {
+        font-weight: 500;
+        color: #555;
+      }
+      .result-box {
+        margin-top: 15px;
+        padding: 15px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-height: 50px;
+        max-height: 400px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .result-box.empty {
+        color: #999;
+        font-style: italic;
+      }
+      .status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 10px;
+      }
+      .status.loading {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .status.success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background: white;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+      th {
+        background: #f0f0f0;
+        font-weight: 600;
+        color: #333;
+      }
+      tr:hover {
+        background: #f9f9f9;
+      }
+      .tabs {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ddd;
+      }
+      .tab {
+        padding: 10px 20px;
+        background: #f5f5f5;
+        border: none;
+        border-radius: 4px 4px 0 0;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #666;
+      }
+      .tab.active {
+        background: white;
+        color: #2196f3;
+        border-bottom: 2px solid #2196f3;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚚 Gestor Logístico - Algoritmos y Optimización</h1>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('centros')">
+          Centros
+        </button>
+        <button class="tab" onclick="switchTab('envios')">📦 Envíos</button>
+        <button class="tab" onclick="switchTab('grafos')">Grafos</button>
+        <button class="tab" onclick="switchTab('optimizacion')">
+          Optimización
+        </button>
+      </div>
+
+      <!-- TAB: CENTROS -->
+      <div id="tab-centros" class="tab-content active">
+        <div class="section">
+          <h2>📦 Gestión de Centros</h2>
+          <div class="button-group">
+            <button class="primary" onclick="loadCentros()">
+              🔄 Cargar Centros
+            </button>
+            <button class="secondary" onclick="mostrarInstruccionesNeo4j()">
+              � Instrucciones Inicialización
+            </button>
+            <button class="danger" onclick="clearData()">
+              🗑️ Limpiar Datos
+            </button>
+            <span id="statusCentros"></span>
+          </div>
+
+          <div
+            id="instruccionesNeo4j"
+            style="
+              display: none;
+              background: #e3f2fd;
+              padding: 15px;
+              border-radius: 6px;
+              margin: 15px 0;
+              border-left: 4px solid #2196f3;
+            "
+          >
+            <h3 style="margin-top: 0; color: #1976d2">
+              🔧 Cómo Inicializar la Base de Datos
+            </h3>
+            <ol style="line-height: 1.8; color: #333">
+              <li>
+                Abre <strong>Neo4j Aura</strong> en tu navegador:
+                <a href="https://console.neo4j.io" target="_blank"
+                  >console.neo4j.io</a
+                >
+              </li>
+              <li>Selecciona tu instancia de Neo4j</li>
+              <li>
+                Click en <strong>"Query"</strong> o
+                <strong>"Open with Neo4j Browser"</strong>
+              </li>
+              <li>
+                Abre el archivo <code>init-neo4j-completo.cypher</code> en tu
+                proyecto
+              </li>
+              <li>Copia TODO el contenido del archivo</li>
+              <li>Pégalo en la consola de Neo4j</li>
+              <li>Presiona <strong>Ctrl + Enter</strong> o click en ▶️ Run</li>
+              <li>
+                Verás un mensaje confirmando la creación de 6 centros y 17 rutas
+              </li>
+              <li>
+                Vuelve aquí y haz click en <strong>"🔄 Cargar Centros"</strong>
+              </li>
+            </ol>
+            <p
+              style="
+                background: #fff3cd;
+                padding: 10px;
+                border-radius: 4px;
+                margin-top: 10px;
+              "
+            >
+              ⚠️ <strong>Nota:</strong> La inicialización desde el backend tiene
+              problemas con Neo4j Aura. Es más confiable ejecutar el script
+              directamente en Neo4j.
+            </p>
+          </div>
+
+          <table id="centrosTable" style="display: none">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Ciudad</th>
+                <th>Capacidad</th>
+                <th>Rutas</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="emptyCentros" class="result-box empty">
+            No hay datos cargados.
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ENVÍOS -->
+      <div id="tab-envios" class="tab-content">
+        <!-- Ruta con Menos Transbordos (BFS) -->
+        <div class="section">
+          <h2>🚚 Ruta con Menos Transbordos (BFS)</h2>
+          <p style="color: #666; margin-bottom: 10px">
+            Encuentra la ruta con el menor número de transbordos entre dos
+            centros.
+          </p>
+          <div class="input-group">
+            <label>Centro Origen:</label>
+            <select id="origenMenosTransbordos"></select>
+            <label>Centro Destino:</label>
+            <select id="destinoMenosTransbordos"></select>
+            <button onclick="ejecutarMenosTransbordos()">Buscar Ruta</button>
+          </div>
+          <div id="resultMenosTransbordos" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- Explorar Red de Distribución (DFS) -->
+        <div class="section">
+          <h2>🌐 Explorar Red de Distribución (DFS)</h2>
+          <p style="color: #666; margin-bottom: 10px">
+            Explora qué centros son alcanzables desde un punto de origen con un
+            límite de saltos.
+          </p>
+          <div class="input-group">
+            <label>Centro Origen:</label>
+            <select id="origenExplorar"></select>
+            <label>Profundidad Máxima:</label>
+            <input
+              type="number"
+              id="profundidadExplorar"
+              value="3"
+              min="1"
+              max="10"
+              style="width: 80px"
+            />
+            <button onclick="ejecutarExplorarRed()">Explorar</button>
+          </div>
+          <div id="resultExplorar" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- Rutas con Restricciones (Backtracking) -->
+        <div class="section">
+          <h2>🎯 Buscar Rutas con Restricciones (Backtracking)</h2>
+          <p style="color: #666; margin-bottom: 10px">
+            Encuentra todas las rutas posibles aplicando restricciones de costo,
+            tiempo o distancia.
+          </p>
+          <div class="input-group">
+            <label>Centro Origen:</label>
+            <select id="origenRestricciones"></select>
+            <label>Centro Destino:</label>
+            <select id="destinoRestricciones"></select>
+          </div>
+          <div class="input-group">
+            <label>Métrica:</label>
+            <select id="metricaRestricciones">
+              <option value="tiempoMin">Tiempo (min)</option>
+              <option value="costo">Costo ($)</option>
+              <option value="distKm">Distancia (km)</option>
+            </select>
+            <label>Valor Máximo:</label>
+            <input
+              type="number"
+              id="valorMaxRestricciones"
+              placeholder="Opcional"
+              style="width: 120px"
+            />
+            <label>Máx. Transbordos:</label>
+            <input
+              type="number"
+              id="maxTransbordos"
+              value="4"
+              min="1"
+              max="10"
+              style="width: 80px"
+            />
+            <button onclick="ejecutarRutasConRestricciones()">
+              Buscar Rutas
+            </button>
+          </div>
+          <div id="resultRestricciones" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- Ruta Óptima (Dijkstra) -->
+        <div class="section">
+          <h2>⚡ Ruta Óptima (Dijkstra)</h2>
+          <p style="color: #666; margin-bottom: 10px">
+            Encuentra la ruta que minimiza una métrica específica (tiempo, costo
+            o distancia).
+          </p>
+          <div class="input-group">
+            <label>Centro Origen:</label>
+            <select id="origenOptima"></select>
+            <label>Centro Destino:</label>
+            <select id="destinoOptima"></select>
+            <label>Optimizar por:</label>
+            <select id="metricaOptima">
+              <option value="tiempoMin">Tiempo (min)</option>
+              <option value="costo">Costo ($)</option>
+              <option value="distKm">Distancia (km)</option>
+            </select>
+            <button onclick="ejecutarRutaOptima()">Calcular Ruta</button>
+          </div>
+          <div id="resultOptima" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: GRAFOS -->
+      <div id="tab-grafos" class="tab-content">
+        <!-- Recorridos -->
+        <div class="section">
+          <h2>🔍 Recorridos de Grafos</h2>
+          <div class="input-group">
+            <label>Centro origen:</label>
+            <select id="origenRecorrido">
+              <option value="">Seleccione un centro...</option>
+            </select>
+            <button onclick="ejecutarBFS()">BFS (Amplitud)</button>
+            <button onclick="ejecutarDFS()">DFS (Profundidad)</button>
+          </div>
+          <div id="resultRecorridos" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- Dijkstra -->
+        <div class="section">
+          <h2>🛣️ Caminos Mínimos (Dijkstra)</h2>
+          <div class="input-group">
+            <label>Centro origen:</label>
+            <select id="origenDijkstra">
+              <option value="">Seleccione un centro...</option>
+            </select>
+            <label>Métrica:</label>
+            <select id="metricaDijkstra">
+              <option value="tiempoMin">Tiempo (min)</option>
+              <option value="costo">Costo ($)</option>
+              <option value="distKm">Distancia (km)</option>
+            </select>
+            <button onclick="ejecutarDijkstra()">
+              Calcular Caminos Mínimos
+            </button>
+          </div>
+          <div id="resultDijkstra" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- MST -->
+        <div class="section">
+          <h2>🌲 Árbol de Expansión Mínima (MST)</h2>
+          <div class="input-group">
+            <label>Métrica:</label>
+            <select id="metricaMST">
+              <option value="distKm">Distancia (km)</option>
+              <option value="tiempoMin">Tiempo (min)</option>
+              <option value="costo">Costo ($)</option>
+            </select>
+            <button onclick="ejecutarPrim()">Algoritmo de Prim</button>
+            <button onclick="ejecutarKruskal()">Algoritmo de Kruskal</button>
+          </div>
+          <div id="resultMST" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- Backtracking -->
+        <div class="section">
+          <h2>🔀 Todas las Rutas (Backtracking)</h2>
+          <div class="input-group">
+            <label>Origen:</label>
+            <select id="origenBT">
+              <option value="">Seleccione origen...</option>
+            </select>
+            <label>Destino:</label>
+            <select id="destinoBT">
+              <option value="">Seleccione destino...</option>
+            </select>
+            <label>Máx. saltos:</label>
+            <input
+              type="number"
+              id="maxSaltos"
+              value="4"
+              min="1"
+              max="10"
+              style="width: 80px"
+            />
+            <label>Métrica:</label>
+            <select id="metricaBT">
+              <option value="tiempoMin">Tiempo</option>
+              <option value="costo">Costo</option>
+              <option value="distKm">Distancia</option>
+            </select>
+            <button onclick="ejecutarBacktracking()">Buscar Rutas</button>
+          </div>
+          <div id="resultBT" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- TSP -->
+        <div class="section">
+          <h2>🗺️ Problema del Viajante (TSP - Branch & Bound)</h2>
+          <div class="input-group">
+            <label>Centros (separados por comas):</label>
+            <input
+              type="text"
+              id="centrosTSP"
+              placeholder="ej: CA001,CA002,CA003,CA004"
+              style="flex: 1; min-width: 300px"
+            />
+          </div>
+          <div class="input-group">
+            <label>Métrica:</label>
+            <select id="metricaTSP">
+              <option value="distKm">Distancia (km)</option>
+              <option value="tiempoMin">Tiempo (min)</option>
+              <option value="costo">Costo ($)</option>
+            </select>
+            <button onclick="ejecutarTSP()">Calcular Mejor Ruta</button>
+          </div>
+          <div id="resultTSP" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: OPTIMIZACIÓN -->
+      <div id="tab-optimizacion" class="tab-content">
+        <!-- MergeSort -->
+        <div class="section">
+          <h2>📊 Ordenamiento (MergeSort)</h2>
+          <div class="input-group">
+            <label>Valores (separados por comas):</label>
+            <input
+              type="text"
+              id="valoresSort"
+              placeholder="ej: 5,2,8,1,9,3"
+              style="flex: 1; min-width: 300px"
+            />
+            <button onclick="ejecutarMergeSort()">Ordenar</button>
+          </div>
+          <div id="resultSort" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- Mochila Fraccional -->
+        <div class="section">
+          <h2>💰 Mochila Fraccional (Greedy)</h2>
+          <div class="input-group">
+            <label>Capacidad:</label>
+            <input
+              type="number"
+              id="capFrac"
+              value="50"
+              min="1"
+              style="width: 100px"
+            />
+          </div>
+          <div class="input-group">
+            <label
+              >Items (formato: id:peso:beneficio, separados por comas):</label
+            >
+            <input
+              type="text"
+              id="itemsFrac"
+              placeholder="ej: A:10:60,B:20:100,C:30:120"
+              style="flex: 1; min-width: 400px"
+            />
+            <button onclick="ejecutarMochilaFraccional()">Calcular</button>
+          </div>
+          <div id="resultFrac" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+
+        <!-- Mochila 0/1 -->
+        <div class="section">
+          <h2>🎒 Mochila 0/1 (Programación Dinámica)</h2>
+          <div class="input-group">
+            <label>Capacidad:</label>
+            <input
+              type="number"
+              id="cap01"
+              value="50"
+              min="1"
+              style="width: 100px"
+            />
+          </div>
+          <div class="input-group">
+            <label
+              >Items (formato: id:peso:beneficio, separados por comas):</label
+            >
+            <input
+              type="text"
+              id="items01"
+              placeholder="ej: A:10:60,B:20:100,C:30:120"
+              style="flex: 1; min-width: 400px"
+            />
+            <button onclick="ejecutarMochila01()">Calcular</button>
+          </div>
+          <div id="result01" class="result-box empty">
+            Los resultados aparecerán aquí...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let centrosData = [];
+
+      // ============ UTILIDADES ============
+      function escapeHtml(s) {
+        if (s == null) return '';
+        return String(s)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;');
+      }
+
+      function showStatus(elemId, message, type) {
+        const el = document.getElementById(elemId);
+        el.innerHTML = `<span class="status ${type}">${message}</span>`;
+      }
+
+      function showResult(elemId, data) {
+        const el = document.getElementById(elemId);
+        el.className = 'result-box';
+        el.textContent = JSON.stringify(data, null, 2);
+      }
+
+      function switchTab(tabName) {
+        // Ocultar todos los tabs
+        document
+          .querySelectorAll('.tab-content')
+          .forEach((t) => t.classList.remove('active'));
+        document
+          .querySelectorAll('.tab')
+          .forEach((t) => t.classList.remove('active'));
+
+        // Mostrar el tab seleccionado
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+        event.target.classList.add('active');
+      }
+
+      // ============ CENTROS ============
+      async function loadCentros() {
+        showStatus('statusCentros', 'Cargando...', 'loading');
+        try {
+          const res = await fetch('/centros');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          centrosData = await res.json();
+          renderCentros(centrosData);
+          showStatus(
+            'statusCentros',
+            `✓ Cargados ${centrosData.length} centros`,
+            'success'
+          );
+        } catch (err) {
+          console.error(err);
+          showStatus('statusCentros', '✗ Error: ' + err.message, 'error');
+          document.getElementById('centrosTable').style.display = 'none';
+          document.getElementById('emptyCentros').style.display = 'block';
+        }
+      }
+
+      function mostrarInstruccionesNeo4j() {
+        const instrucciones = document.getElementById('instruccionesNeo4j');
+        if (instrucciones.style.display === 'none') {
+          instrucciones.style.display = 'block';
+          showStatus(
+            'statusCentros',
+            '📋 Instrucciones mostradas abajo',
+            'success'
+          );
+        } else {
+          instrucciones.style.display = 'none';
+        }
+      }
+
+      async function initializeData() {
+        showStatus(
+          'statusCentros',
+          'ℹ️ Usa el botón "📋 Instrucciones Inicialización"',
+          'loading'
+        );
+        mostrarInstruccionesNeo4j();
+      }
+
+      async function clearData() {
+        if (
+          !confirm(
+            '⚠️ ¿Está seguro de que desea eliminar TODOS los datos? Esta acción no se puede deshacer.'
+          )
+        ) {
+          return;
+        }
+        showStatus('statusCentros', 'Eliminando...', 'loading');
+        try {
+          const res = await fetch('/data/clear', { method: 'DELETE' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          showStatus('statusCentros', `✓ ${data.message}`, 'success');
+          // Limpiar la tabla
+          document.getElementById('centrosTable').style.display = 'none';
+          document.getElementById('emptyCentros').style.display = 'block';
+          centrosData = [];
+        } catch (err) {
+          console.error(err);
+          showStatus(
+            'statusCentros',
+            '✗ Error al limpiar: ' + err.message,
+            'error'
+          );
+        }
+      }
+
+      function renderCentros(centros) {
+        const tbody = document.querySelector('#centrosTable tbody');
+        tbody.innerHTML = '';
+
+        if (!centros || centros.length === 0) {
+          document.getElementById('centrosTable').style.display = 'none';
+          document.getElementById('emptyCentros').style.display = 'block';
+          return;
+        }
+
+        document.getElementById('centrosTable').style.display = '';
+        document.getElementById('emptyCentros').style.display = 'none';
+
+        centros.forEach((c) => {
+          const tr = document.createElement('tr');
+          let rutasDesc = '<span style="color:#999">-</span>';
+
+          if (c.rutas && c.rutas.length > 0) {
+            try {
+              rutasDesc = c.rutas
+                .map((r) => {
+                  let dest = '??';
+                  if (r.destino) {
+                    dest = r.destino.id || r.destino.nombre || '??';
+                  }
+                  const tiempo = r.tiempoMin || 0;
+                  const costo = r.costo || 0;
+                  const dist = r.distKm || 0;
+                  return `${dest} → ${tiempo}min / $${costo} / ${dist}km`;
+                })
+                .join('<br>');
+            } catch (err) {
+              console.error('Error procesando rutas:', err, c);
+              rutasDesc = '<span style="color:#f00">Error en rutas</span>';
+            }
+          }
+
+          tr.innerHTML = `
+            <td>${escapeHtml(c.id)}</td>
+            <td>${escapeHtml(c.nombre)}</td>
+            <td>${escapeHtml(c.ciudad)}</td>
+            <td style="text-align:right">${c.capacidad || ''}</td>
+            <td>${rutasDesc}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        // Llenar los selectores con los centros
+        populateSelectsWithCentros(centros);
+      }
+
+      function populateSelectsWithCentros(centros) {
+        // Lista de IDs de selectores a poblar
+        const selectIds = [
+          'origenRecorrido',
+          'origenDijkstra',
+          'origenBT',
+          'destinoBT',
+          // Nuevos selectores de la pestaña Envíos
+          'origenMenosTransbordos',
+          'destinoMenosTransbordos',
+          'origenExplorar',
+          'origenRestricciones',
+          'destinoRestricciones',
+          'origenOptima',
+          'destinoOptima',
+        ];
+
+        selectIds.forEach((selectId) => {
+          const select = document.getElementById(selectId);
+          if (!select) return; // Por si acaso el select no existe
+
+          // Guardar la opción por defecto
+          const defaultOption = select.querySelector('option[value=""]');
+          select.innerHTML = '';
+          if (defaultOption) {
+            select.appendChild(defaultOption);
+          }
+
+          // Agregar opciones de centros
+          centros.forEach((c) => {
+            const option = document.createElement('option');
+            option.value = c.id;
+            option.textContent = `${c.id} - ${c.nombre} (${c.ciudad})`;
+            select.appendChild(option);
+          });
+        });
+      }
+
+      // ============ GRAFOS - RECORRIDOS ============
+      async function ejecutarBFS() {
+        const origen = document.getElementById('origenRecorrido').value;
+        if (!origen) {
+          alert('Seleccione un centro de origen');
+          return;
+        }
+        try {
+          const res = await fetch(
+            `/grafos/bfs?origen=${encodeURIComponent(origen)}`
+          );
+          const data = await res.json();
+          showResult('resultRecorridos', data);
+        } catch (err) {
+          showResult('resultRecorridos', { error: err.message });
+        }
+      }
+
+      async function ejecutarDFS() {
+        const origen = document.getElementById('origenRecorrido').value;
+        if (!origen) {
+          alert('Seleccione un centro de origen');
+          return;
+        }
+        try {
+          const res = await fetch(
+            `/grafos/dfs?origen=${encodeURIComponent(origen)}`
+          );
+          const data = await res.json();
+          showResult('resultRecorridos', data);
+        } catch (err) {
+          showResult('resultRecorridos', { error: err.message });
+        }
+      }
+
+      // ============ GRAFOS - DIJKSTRA ============
+      async function ejecutarDijkstra() {
+        const origen = document.getElementById('origenDijkstra').value;
+        const metrica = document.getElementById('metricaDijkstra').value;
+        if (!origen) {
+          alert('Seleccione un centro de origen');
+          return;
+        }
+        try {
+          const res = await fetch(
+            `/grafos/dijkstra?origen=${encodeURIComponent(
+              origen
+            )}&metrica=${metrica}`
+          );
+          const data = await res.json();
+          showResult('resultDijkstra', data);
+        } catch (err) {
+          showResult('resultDijkstra', { error: err.message });
+        }
+      }
+
+      // ============ GRAFOS - MST ============
+      async function ejecutarPrim() {
+        const metrica = document.getElementById('metricaMST').value;
+        try {
+          const res = await fetch(`/grafos/mst/prim?metrica=${metrica}`);
+          const data = await res.json();
+          showResult('resultMST', data);
+        } catch (err) {
+          showResult('resultMST', { error: err.message });
+        }
+      }
+
+      async function ejecutarKruskal() {
+        const metrica = document.getElementById('metricaMST').value;
+        try {
+          const res = await fetch(`/grafos/mst/kruskal?metrica=${metrica}`);
+          const data = await res.json();
+          showResult('resultMST', data);
+        } catch (err) {
+          showResult('resultMST', { error: err.message });
+        }
+      }
+
+      // ============ GRAFOS - BACKTRACKING ============
+      async function ejecutarBacktracking() {
+        const origen = document.getElementById('origenBT').value;
+        const destino = document.getElementById('destinoBT').value;
+        const maxSaltos = document.getElementById('maxSaltos').value;
+        const metrica = document.getElementById('metricaBT').value;
+
+        if (!origen || !destino) {
+          alert('Seleccione origen y destino');
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `/grafos/backtracking/rutas?origen=${encodeURIComponent(
+              origen
+            )}&destino=${encodeURIComponent(
+              destino
+            )}&maxSaltos=${maxSaltos}&metrica=${metrica}`
+          );
+          const data = await res.json();
+          showResult('resultBT', data);
+        } catch (err) {
+          showResult('resultBT', { error: err.message });
+        }
+      }
+
+      // ============ GRAFOS - TSP ============
+      async function ejecutarTSP() {
+        const centrosStr = document.getElementById('centrosTSP').value.trim();
+        const metrica = document.getElementById('metricaTSP').value;
+
+        if (!centrosStr) {
+          alert('Ingrese los centros separados por comas');
+          return;
+        }
+
+        const centros = centrosStr
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s);
+
+        try {
+          const res = await fetch('/grafos/bnb/tsp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ centros, metrica }),
+          });
+          const data = await res.json();
+          showResult('resultTSP', data);
+        } catch (err) {
+          showResult('resultTSP', { error: err.message });
+        }
+      }
+
+      // ============ OPTIMIZACIÓN - MERGESORT ============
+      async function ejecutarMergeSort() {
+        const valoresStr = document.getElementById('valoresSort').value.trim();
+        if (!valoresStr) {
+          alert('Ingrese valores separados por comas');
+          return;
+        }
+
+        const valores = valoresStr
+          .split(',')
+          .map((s) => parseInt(s.trim()))
+          .filter((n) => !isNaN(n));
+
+        try {
+          const res = await fetch('/opt/mergesort', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ valores }),
+          });
+          const data = await res.json();
+          showResult('resultSort', data);
+        } catch (err) {
+          showResult('resultSort', { error: err.message });
+        }
+      }
+
+      // ============ OPTIMIZACIÓN - MOCHILA FRACCIONAL ============
+      async function ejecutarMochilaFraccional() {
+        const capacidad = parseInt(document.getElementById('capFrac').value);
+        const itemsStr = document.getElementById('itemsFrac').value.trim();
+
+        if (!itemsStr) {
+          alert('Ingrese los items');
+          return;
+        }
+
+        const items = itemsStr.split(',').map((s) => {
+          const parts = s.trim().split(':');
+          return {
+            id: parts[0],
+            peso: parseInt(parts[1]),
+            beneficio: parseInt(parts[2]),
+          };
+        });
+
+        try {
+          const res = await fetch('/opt/greedy/fraccional', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ capacidad, items }),
+          });
+          const data = await res.json();
+          showResult('resultFrac', data);
+        } catch (err) {
+          showResult('resultFrac', { error: err.message });
+        }
+      }
+
+      // ============ OPTIMIZACIÓN - MOCHILA 0/1 ============
+      async function ejecutarMochila01() {
+        const capacidad = parseInt(document.getElementById('cap01').value);
+        const itemsStr = document.getElementById('items01').value.trim();
+
+        if (!itemsStr) {
+          alert('Ingrese los items');
+          return;
+        }
+
+        const items = itemsStr.split(',').map((s) => {
+          const parts = s.trim().split(':');
+          return {
+            id: parts[0],
+            peso: parseInt(parts[1]),
+            beneficio: parseInt(parts[2]),
+          };
+        });
+
+        try {
+          const res = await fetch('/opt/dp/mochila01', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ capacidad, items }),
+          });
+          const data = await res.json();
+          showResult('result01', data);
+        } catch (err) {
+          showResult('result01', { error: err.message });
+        }
+      }
+
+      // ============ ENVÍOS ============
+
+      // Menos Transbordos (BFS)
+      async function ejecutarMenosTransbordos() {
+        const origen = document.getElementById('origenMenosTransbordos').value;
+        const destino = document.getElementById(
+          'destinoMenosTransbordos'
+        ).value;
+
+        if (!origen || !destino) {
+          alert('Seleccione origen y destino');
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `/envios/menos-transbordos?origen=${encodeURIComponent(
+              origen
+            )}&destino=${encodeURIComponent(destino)}`
+          );
+          const data = await res.json();
+          showResult('resultMenosTransbordos', data);
+        } catch (err) {
+          showResult('resultMenosTransbordos', { error: err.message });
+        }
+      }
+
+      // Explorar Red (DFS)
+      async function ejecutarExplorarRed() {
+        const origen = document.getElementById('origenExplorar').value;
+        const profundidad = document.getElementById(
+          'profundidadExplorar'
+        ).value;
+
+        if (!origen) {
+          alert('Seleccione un centro de origen');
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `/envios/explorar-red?origen=${encodeURIComponent(
+              origen
+            )}&profundidad=${profundidad}`
+          );
+          const data = await res.json();
+          showResult('resultExplorar', data);
+        } catch (err) {
+          showResult('resultExplorar', { error: err.message });
+        }
+      }
+
+      // Rutas con Restricciones (Backtracking)
+      async function ejecutarRutasConRestricciones() {
+        const origen = document.getElementById('origenRestricciones').value;
+        const destino = document.getElementById('destinoRestricciones').value;
+        const metrica = document.getElementById('metricaRestricciones').value;
+        const valorMax = document.getElementById('valorMaxRestricciones').value;
+        const maxTransbordos = document.getElementById('maxTransbordos').value;
+
+        if (!origen || !destino) {
+          alert('Seleccione origen y destino');
+          return;
+        }
+
+        let url = `/envios/rutas-con-restricciones?origen=${encodeURIComponent(
+          origen
+        )}&destino=${encodeURIComponent(
+          destino
+        )}&metrica=${metrica}&maxTransbordos=${maxTransbordos}`;
+        if (valorMax) {
+          url += `&valorMaximo=${valorMax}`;
+        }
+
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          showResult('resultRestricciones', data);
+        } catch (err) {
+          showResult('resultRestricciones', { error: err.message });
+        }
+      }
+
+      // Ruta Óptima (Dijkstra)
+      async function ejecutarRutaOptima() {
+        const origen = document.getElementById('origenOptima').value;
+        const destino = document.getElementById('destinoOptima').value;
+        const metrica = document.getElementById('metricaOptima').value;
+
+        if (!origen || !destino) {
+          alert('Seleccione origen y destino');
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `/envios/ruta-optima?origen=${encodeURIComponent(
+              origen
+            )}&destino=${encodeURIComponent(destino)}&metrica=${metrica}`
+          );
+          const data = await res.json();
+          showResult('resultOptima', data);
+        } catch (err) {
+          showResult('resultOptima', { error: err.message });
+        }
+      }
+
+      // Auto-load centros al cargar la página
+      window.addEventListener('load', () => loadCentros());
+    </script>
+  </body>
+</html>
