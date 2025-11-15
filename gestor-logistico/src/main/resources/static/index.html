@@ -302,6 +302,18 @@
             No hay datos cargados.
           </div>
         </div>
+
+        <!-- NUEVA SECCIÓN: VISUALIZACIÓN DEL GRAFO -->
+        <div class="section">
+          <h2>🗺️ Visualización del Grafo</h2>
+          <p style="color: #666; margin-bottom: 10px">
+            Representación de los centros (nodos) y sus rutas de salida
+            (aristas).
+          </p>
+          <div id="graph-visualization" class="result-box empty">
+            Para ver el grafo, primero haz click en "🔄 Cargar Centros".
+          </div>
+        </div>
       </div>
 
       <!-- TAB: ENVÍOS -->
@@ -330,7 +342,7 @@
           <h2>🌐 Explorar Red de Distribución (DFS)</h2>
           <p style="color: #666; margin-bottom: 10px">
             Explora qué centros son alcanzables desde un punto de origen con un
-            límite de saltos.
+            límite de saltos.a
           </p>
           <div class="input-group">
             <label>Centro Origen:</label>
@@ -669,6 +681,7 @@
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           centrosData = await res.json();
           renderCentros(centrosData);
+          renderGraph(centrosData); // Llamada a la nueva función para renderizar el grafo
           showStatus(
             'statusCentros',
             `✓ Cargados ${centrosData.length} centros`,
@@ -723,6 +736,7 @@
           document.getElementById('centrosTable').style.display = 'none';
           document.getElementById('emptyCentros').style.display = 'block';
           centrosData = [];
+          renderGraph([]); // Limpiar la visualización del grafo
         } catch (err) {
           console.error(err);
           showStatus(
@@ -782,6 +796,37 @@
 
         // Llenar los selectores con los centros
         populateSelectsWithCentros(centros);
+      }
+
+      function renderGraph(centros) {
+        const container = document.getElementById('graph-visualization');
+        if (!centros || centros.length === 0) {
+          container.innerHTML =
+            'Para ver el grafo, primero haz click en "🔄 Cargar Centros".';
+          container.classList.add('empty');
+          return;
+        }
+
+        container.innerHTML = '';
+        container.classList.remove('empty');
+
+        centros.forEach((centro) => {
+          const centroDiv = document.createElement('div');
+          centroDiv.style.marginBottom = '15px';
+
+          let rutasHtml = '<em>(Sin rutas de salida)</em>';
+          if (centro.rutas && centro.rutas.length > 0) {
+            rutasHtml = '<ul>';
+            centro.rutas.forEach((ruta) => {
+              const destinoId = ruta.destino ? ruta.destino.id : '??';
+              rutasHtml += `<li>→ <strong>${destinoId}</strong> (Tiempo: ${ruta.tiempoMin} min, Costo: $${ruta.costo}, Dist: ${ruta.distKm} km)</li>`;
+            });
+            rutasHtml += '</ul>';
+          }
+
+          centroDiv.innerHTML = `<strong>📍 ${centro.id} (${centro.nombre})</strong>${rutasHtml}`;
+          container.appendChild(centroDiv);
+        });
       }
 
       function populateSelectsWithCentros(centros) {
@@ -1045,8 +1090,6 @@
           showResult('result01', { error: err.message });
         }
       }
-
-      // ============ ENVÍOS ============
 
       // Menos Transbordos (BFS)
       async function ejecutarMenosTransbordos() {
